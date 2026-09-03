@@ -1,4 +1,6 @@
-import { useRouter } from "next/router";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { FaSearch, FaTimes } from "react-icons/fa";
 
 interface SearchProps {
@@ -17,31 +19,30 @@ export default function Search({ isOpen, onClose }: SearchProps) {
   const formData = new FormData(e.currentTarget);
   const keyword = formData.get("search") as string;
 
-  if (!keyword.trim()) return;
+  if (!keyword?.trim()) return;
 
   onClose();
 
-  router.push(`/search?query=${encodeURIComponent(keyword)}`);
+  router.push(`/search?query=${encodeURIComponent(keyword.trim())}`);
  };
+
  return (
   <div className="fixed inset-0 z-[9999] bg-white">
-   <button onClick={onClose} className="absolute right-6 top-6 cursor-pointer text-2xl">
+   <button onClick={onClose} className="absolute right-6 top-6 cursor-pointer text-2xl" aria-label="Close search">
     <FaTimes />
    </button>
 
    <div className="mx-auto w-full max-w-[470px] px-5 pt-10 md:pt-20">
-    <div className="flex h-[38px] items-center rounded-full bg-[#f5f5f5] px-4">
-     <form onSubmit={handleSubmit} className="flex h-[38px] items-center rounded-full bg-[#f5f5f5] px-4">
-      <FaSearch className="mr-2 text-sm text-[#666]" />
+    <form onSubmit={handleSubmit} className="flex h-[38px] items-center rounded-full bg-[#f5f5f5] px-4">
+     <FaSearch className="mr-2 text-sm text-[#666]" />
 
-      <input
-       name="search"
-       type="text"
-       placeholder="Search"
-       className="w-full appearance-none border-0 bg-transparent text-sm outline-none focus:border-0 focus:outline-none focus:ring-0"
-      />
-     </form>
-    </div>
+     <input
+      name="search"
+      type="text"
+      placeholder="Search"
+      className="w-full appearance-none border-0 bg-transparent text-sm outline-none focus:border-0 focus:outline-none focus:ring-0"
+     />
+    </form>
 
     <div className="mt-12">
      <h3 className="mb-5 text-sm font-bold text-primary">Shortcuts</h3>
