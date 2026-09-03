@@ -110,7 +110,7 @@ const Footer = () => {
        </li>
 
        <li className="mt-auto">
-        <Link href="">Accessories</Link>
+        <Link href="accessories">Accessories</Link>
        </li>
       </ul>
      </li>
@@ -132,23 +132,23 @@ const Footer = () => {
         </Link>
         <ul>
          <li>
-          <Link href="">The film</Link>
+          <Link href="oyster-story/the-film">The film</Link>
          </li>
         </ul>
        </li>
        <li>
-        <Link className="text-base md:text-2xl font-bold" href="">
+        <Link className="text-base md:text-2xl font-bold" href="about-rolex">
          About Rolex
         </Link>
         <ul>
          <li>
-          <Link href="">Sustainability</Link>
+          <Link href="about-rolex/sustainable-development">Sustainability</Link>
          </li>
          <li>
           <Link href="">Behind the crown</Link>
          </li>
          <li className="">
-          <Link href="">History</Link>
+          <Link href="history">History</Link>
          </li>
         </ul>
        </li>
@@ -313,15 +313,15 @@ const Footer = () => {
      </div>
     </div>
     <div className="mt-8 flex gap-2 items-center justify-center">
-     <Link className="hover:text-[#127749]" href="">
+     <Link className="hover:text-[#127749]" href="legal-notices/terms-of-use">
       Terms of use
      </Link>
      <span>-</span>
-     <Link className="hover:text-[#127749]" href="">
+     <Link className="hover:text-[#127749]" href="legal-notices/privacy-notice">
       Privacy notice
      </Link>
      <span>-</span>
-     <Link className="hover:text-[#127749]" href="">
+     <Link className="hover:text-[#127749]" href="legal-notices/cookies">
       Cookies
      </Link>
     </div>
