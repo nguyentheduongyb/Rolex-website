@@ -2,36 +2,27 @@ import { useRouter } from "next/router";
 import { FaSearch, FaTimes } from "react-icons/fa";
 
 interface SearchProps {
-  isOpen: boolean;
-  onClose: () => void;
+ isOpen: boolean;
+ onClose: () => void;
 }
 
 export default function Search({ isOpen, onClose }: SearchProps) {
-<<<<<<< HEAD
-  const router = useRouter();
-
-  if (!isOpen) return null;
-=======
  const router = useRouter();
 
  if (!isOpen) return null;
 
  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
->>>>>>> 47ff67d (2 commit)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const formData = new FormData(e.currentTarget);
+  const keyword = formData.get("search") as string;
 
-    const formData = new FormData(e.currentTarget);
-    const keyword = formData.get("search") as string;
+  if (!keyword.trim()) return;
 
-    if (!keyword.trim()) return;
+  onClose();
 
-    onClose();
-
-    router.push(`/search?query=${encodeURIComponent(keyword)}`);
-  };
+  router.push(`/search?query=${encodeURIComponent(keyword)}`);
+ };
  return (
   <div className="fixed inset-0 z-[9999] bg-white">
    <button onClick={onClose} className="absolute right-6 top-6 cursor-pointer text-2xl">
