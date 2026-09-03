@@ -1,12 +1,219 @@
-"use client";
-import React from "react";
 import Link from "next/link";
-import { BsDiscord, BsGithub, BsFacebook, BsInstagram, BsTwitter } from "react-icons/bs";
-import { FaExternalLinkAlt, FaFacebook, FaInstagram, FaLinkedin, FaPinterestP, FaWeibo, FaYoutube } from "react-icons/fa";
-import { AiFillWechat, AiOutlineGlobal } from "react-icons/ai";
-import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
+import { BsGithub, BsTwitter } from "react-icons/bs";
+import { FaYoutube, FaInstagram, FaFacebookF, FaLinkedinIn, FaPinterestP } from "react-icons/fa6";
+
+import { SiSinaweibo, SiWechat, SiTiktok, SiLine } from "react-icons/si";
 
 const Footer = () => {
+ const watchLinks = [
+  { name: "Air-King", link: "/watches/air-king" },
+  { name: "Cosmograph Daytona", link: "/watches/cosmograph-daytona" },
+  { name: "Datejust", link: "/watches/datejust" },
+  { name: "Lady-Datejust", link: "/watches/lady-datejust" },
+  { name: "Day-Date", link: "/watches/day-date" },
+  { name: "Explorer", link: "/watches/explorer" },
+  { name: "Explorer II", link: "/watches/explorer-ii" },
+  { name: "GMT-Master II", link: "/watches/gmt-master-ii" },
+  { name: "Land-Dweller", link: "/watches/land-dweller" },
+  { name: "Oyster Perpetual", link: "/watches/oyster-perpetual" },
+  { name: "Sea-Dweller", link: "/watches/sea-dweller" },
+  { name: "Deepsea", link: "/watches/deepsea" },
+  { name: "Sky-Dweller", link: "/watches/sky-dweller" },
+  { name: "Submariner", link: "/watches/submariner" },
+  { name: "Yacht-Master", link: "/watches/yacht-master" },
+  { name: "Yacht-Master II", link: "/watches/yacht-master-ii" },
+  { name: "1908", link: "/watches/1908" },
+ ];
+
+ const discoverLinks = [
+  { name: "New watches 2026", link: "/watches/new-watches" },
+  { name: "Find your Rolex", link: "/find-your-rolex" },
+  { name: "Configure your Rolex", link: "/configure-your-rolex" },
+  { name: "Men's watches", link: "/watches/mens" },
+  { name: "Women's watches", link: "/watches/womens" },
+  { name: "Gold watches", link: "/watches/gold" },
+ ];
+
+ const accessoriesLinks = [
+  {
+   name: "Accessories",
+   link: "/accessories",
+  },
+ ];
+
+ const watchmakingLinks = [
+  {
+   name: "Rolex anatomy",
+   link: "/watchmaking/anatomy",
+  },
+ ];
+
+ const oysterStoryLinks = [
+  {
+   name: "The film",
+   link: "/oyster-story/oyster-film",
+  },
+ ];
+
+ const aboutRolexLinks = [
+  {
+   name: "Sustainability",
+   link: "/about-rolex/sustainable-development",
+  },
+  {
+   name: "Behind the crown",
+   link: "/about-rolex/behind-the-crown",
+  },
+  {
+   name: "History",
+   link: "/about-rolex/history",
+  },
+ ];
+
+ const sportsLinks = [
+  {
+   name: "Rolex and sports",
+   link: "/sports",
+  },
+  {
+   name: "Perpetual Planet",
+   link: "/perpetual-planet",
+  },
+  {
+   name: "Perpetual Arts",
+   link: "/perpetual-arts",
+  },
+ ];
+
+ const rolexFamilyLinks = [
+  {
+   name: "The Rolex family",
+   link: "/about-rolex",
+  },
+ ];
+
+ const buyingLinks = [
+  {
+   name: "Buying a Rolex",
+   link: "/buying-a-rolex",
+  },
+  {
+   name: "Rolex Certified Pre-Owned",
+   link: "/certified-pre-owned",
+  },
+  {
+   name: "Servicing your Rolex",
+   link: "/servicing",
+  },
+  {
+   name: "Caring for your Rolex",
+   link: "/caring-for-your-rolex",
+  },
+ ];
+
+ const locationLinks = [
+  {
+   name: "Store locator",
+   link: "/store-locator",
+  },
+  {
+   name: "Service Centre locator",
+   link: "/service-centre-locator",
+  },
+ ];
+
+ const supportLinks = [
+  {
+   name: "Frequently asked questions",
+   link: "/frequently-asked-questions",
+  },
+  {
+   name: "File a report",
+   link: "/file-a-report",
+  },
+ ];
+
+ const accessibilityLinks = [
+  {
+   name: "Read our statement",
+   link: "/accessibility",
+  },
+ ];
+
+ const mediaLinks = [
+  {
+   name: "Wallpapers",
+   link: "/media/wallpapers",
+  },
+  {
+   name: "Brochures",
+   link: "/media/brochures",
+  },
+  {
+   name: "User guides",
+   link: "/media/user-guides",
+  },
+ ];
+
+ const socialLinks = [
+  {
+   name: "YouTube",
+   link: "https://www.youtube.com",
+   icon: <FaYoutube />,
+  },
+  {
+   name: "Instagram",
+   link: "https://www.instagram.com",
+   icon: <FaInstagram />,
+  },
+  {
+   name: "Facebook",
+   link: "https://www.facebook.com",
+   icon: <FaFacebookF />,
+  },
+  {
+   name: "LinkedIn",
+   link: "https://www.linkedin.com",
+   icon: <FaLinkedinIn />,
+  },
+  {
+   name: "Pinterest",
+   link: "https://www.pinterest.com",
+   icon: <FaPinterestP />,
+  },
+  {
+   name: "Weibo",
+   link: "#",
+   icon: <SiSinaweibo />,
+  },
+  {
+   name: "WeChat",
+   link: "#",
+   icon: <SiWechat />,
+  },
+  {
+   name: "Douyin",
+   link: "#",
+   icon: <SiTiktok />,
+  },
+  {
+   name: "Line",
+   link: "#",
+   icon: <SiLine />,
+  },
+ ];
+
+ const platformLinks = [
+  {
+   name: "Newsroom",
+   link: "/newsroom",
+  },
+  {
+   name: "Rolex.org",
+   link: "https://www.rolex.org",
+  },
+ ];
+
  return (
   <footer>
    <section className="w-full bg-white mt-5 text-[#127749]">
@@ -20,10 +227,10 @@ const Footer = () => {
        <BsGithub className="w-[20px] h-[20px]" />
       </Link>
       <Link href="" target="_blank">
-       <BsFacebook className="w-[20px] h-[20px]" />
+       <FaFacebookF className="w-[20px] h-[20px]" />
       </Link>
       <Link href="">
-       <BsInstagram className="w-[20px] h-[20px]" />
+       <FaInstagram className="w-[20px] h-[20px]" />
       </Link>
       <Link href="">
        <BsTwitter className="w-[20px] h-[20px]" />
@@ -31,311 +238,323 @@ const Footer = () => {
      </div>
     </div>
    </section>
-   <div className="text-[12px] md:text-[18px] mb-16">
-    <ul className="container md:w-3/4 mx-auto columns-2 md:columns-3 gap-3 md:gap-20">
-     <li className="">
-      <ul className="mb-4 flex flex-col h-full">
-       <Link className="text-base lg:text-2xl font-bold" href="">
-        Rolex watches and accessories
-       </Link>
-       <li>
-        <Link href="">Air-King</Link>
-       </li>
-       <li>
-        <Link href="">Cosmograph Daytona</Link>
-       </li>
-       <li>
-        <Link href="">Datejust</Link>
-       </li>
-       <li>
-        <Link href="">Lady-Datejust</Link>
-       </li>
-       <li>
-        <Link href="">Day-Date</Link>
-       </li>
-       <li>
-        <Link href="">Explorer</Link>
-       </li>
-       <li>
-        <Link href="">Explorer II</Link>
-       </li>
-       <li>
-        <Link href="">GMT-Master II</Link>
-       </li>
-       <li>
-        <Link href="">Land-Dweller</Link>
-       </li>
-       <li>
-        <Link href="">Oyster Perpetual</Link>
-       </li>
-       <li>
-        <Link href="">Sea-Dweller</Link>
-       </li>
-       <li>
-        <Link href="">Deepsea</Link>
-       </li>
-       <li>
-        <Link href="">Sky-Dweller</Link>
-       </li>
-       <li>
-        <Link href="">Submariner</Link>
-       </li>
-       <li>
-        <Link href="">Yacht-Master</Link>
-       </li>
-       <li>
-        <Link href="">Yacht-Master II</Link>
-       </li>
-       <li>
-        <Link href="">1908</Link>
-       </li>
+   <section className="bg-[#f5f5f5] py-10 text-[#30343b] md:py-16">
+    <div className="container md:w-3/5 mx-auto">
+     <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 md:gap-x-20">
+      {/* ================= CỘT 1 ================= */}
+      <div>
+       <h2 className="mb-3 text-sm font-bold leading-tight md:text-2xl">
+        Rolex watches and
+        <br />
+        accessories
+       </h2>
 
-       <li className="mt-4">
-        <Link href="">New watches 2026</Link>
-       </li>
-       <li>
-        <Link href="">Find your Rolex</Link>
-       </li>
-       <li>
-        <Link href="">Configure your Rolex</Link>
-       </li>
-       <li>
-        <Link href="">Men&apos;s watches</Link>
-       </li>
-       <li>
-        <Link href="">Women&apos;s watches</Link>
-       </li>
-       <li>
-        <Link href="">Gold watches</Link>
-       </li>
+       <div className="flex flex-col gap-2">
+        {watchLinks.map((item) => (
+         <Link key={item.name} href={item.link} className="text-xs transition hover:text-[#127749] md:text-base">
+          {item.name}
+         </Link>
+        ))}
+       </div>
 
-       <li className="mt-auto">
-        <Link href="accessories">Accessories</Link>
-       </li>
-      </ul>
-     </li>
-     <li className="">
-      <ul className="flex flex-col justify-between h-full">
-       <li>
-        <Link className="text-base md:text-2xl font-bold" href="">
-         Watchmaking
-        </Link>
-        <ul>
-         <li>
-          <Link href="">Rolex anatomy</Link>
-         </li>
-        </ul>
-       </li>
-       <li>
-        <Link className="text-base md:text-2xl font-bold" href="">
-         Oyster Story
-        </Link>
-        <ul>
-         <li>
-          <Link href="oyster-story/the-film">The film</Link>
-         </li>
-        </ul>
-       </li>
-       <li>
-        <Link className="text-base md:text-2xl font-bold" href="about-rolex">
-         About Rolex
-        </Link>
-        <ul>
-         <li>
-          <Link href="about-rolex/sustainable-development">Sustainability</Link>
-         </li>
-         <li>
-          <Link href="">Behind the crown</Link>
-         </li>
-         <li className="">
-          <Link href="history">History</Link>
-         </li>
-        </ul>
-       </li>
-       <li>
-        <Link className="text-base md:text-2xl font-bold" href="">
-         Sports, Arts and Planet
-        </Link>
-        <ul>
-         <li>
-          <Link href="">Rolex and sports</Link>
-         </li>
-         <li>
-          <Link href="">Perpetual Planet</Link>
-         </li>
-         <li>
-          <Link href="">Perpetual Arts</Link>
-         </li>
-        </ul>
-       </li>
-       <li>
-        <Link href="">The Rolex family</Link>
-       </li>
-       <li>
-        <Link className="text-base md:text-2xl font-bold" href="">
-         Buying and servicing
-        </Link>
-        <ul>
-         <li>
-          <Link href="">Buying a Rolex</Link>
-         </li>
-         <li>
-          <Link href="">Rolex Certified Pre-Owned</Link>
-         </li>
-         <li>
-          <Link href="">Servicing your Rolex</Link>
-         </li>
-         <li>
-          <Link href="">Caring for your Rolex</Link>
-         </li>
-        </ul>
-       </li>
-       Oyster Story
-       <li>
-        <Link href="">Store locator</Link>
-       </li>
-       <li>
-        <Link href="">Service Centre locator</Link>
-       </li>
-      </ul>
-     </li>
-     <li className="">
-      <ul className="h-full flex flex-col justify-between">
-       <li>
-        <Link className="font-bold" href="">
-         Help and support
-        </Link>
-        <ul>
-         <li>
-          <Link href="">Frequently asked questions</Link>
-         </li>
-         <li>
-          <Link href="">File a report</Link>
-         </li>
-        </ul>
-       </li>
+       <div className="mt-8 flex flex-col gap-2">
+        {discoverLinks.map((item) => (
+         <Link key={item.name} href={item.link} className="text-xs transition hover:text-[#127749] md:text-base">
+          {item.name}
+         </Link>
+        ))}
+       </div>
 
-       <li>
-        <Link className="font-bold" href="">
-         Accessibility
-        </Link>
-        <ul>
-         <li>
-          <Link href="">Read our statement</Link>
-         </li>
-        </ul>
-       </li>
+       <div className="mt-8 flex flex-col gap-2">
+        {accessoriesLinks.map((item) => (
+         <Link key={item.name} href={item.link} className="text-xs transition hover:text-[#127749] md:text-base">
+          {item.name}
+         </Link>
+        ))}
+       </div>
 
-       <li>
-        <Link className="font-bold" href="">
-         Media
-        </Link>
-        <ul>
-         <li>
-          <Link href="">Wallpapers</Link>
-         </li>
-         <li>
-          <Link href="">Brochures</Link>
-         </li>
-         <li>
-          <Link href="">User guides</Link>
-         </li>
-        </ul>
-       </li>
+       {/* MOBILE ONLY */}
+       <div className="mt-10 md:hidden">
+        <h2 className="mb-2 text-sm font-bold">Watchmaking</h2>
 
-       <li>
-        <Link className="font-bold" href="">
-         Official channels
-        </Link>
-        <ul>
-         <li className="flex items-center gap-2">
-          <FaYoutube />
-          <Link href="">YouTube</Link>
-         </li>
-         <li className="flex items-center gap-2">
-          <FaInstagram />
-          <Link href="">Instagram</Link>
-         </li>
-         <li className="flex items-center gap-2">
-          <FaFacebook />
-          <Link href="">Facebook</Link>
-         </li>
-         <li className="flex items-center gap-2">
-          <FaLinkedin />
-          <Link href="">LinkedIn</Link>
-         </li>
-         <li className="flex items-center gap-2">
-          <FaPinterestP />
-          <Link href="">Pinterest</Link>
-         </li>
-         <li className="flex items-center gap-2">
-          <FaWeibo />
-          <Link href="">Weibo</Link>
-         </li>
-         <li className="flex items-center gap-2">
-          <AiFillWechat />
-          <Link href="">WeChat</Link>
-         </li>
+        <div className="flex flex-col gap-2">
+         {watchmakingLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="text-xs hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+       </div>
 
-         <li className="flex items-center gap-2">
-          <IoChatbubbleEllipsesOutline />
-          <Link href="">Line</Link>
-         </li>
-        </ul>
-       </li>
+       <div className="mt-8 md:hidden">
+        <h2 className="mb-2 text-sm font-bold">Oyster Story</h2>
 
-       <li>
-        <Link className="font-bold" href="">
-         Our platforms
-        </Link>
-        <ul>
-         <li className="flex items-center gap-2">
-          <Link href="">Newsroom</Link>
+        <div className="flex flex-col gap-2">
+         {oysterStoryLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="text-xs hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+       </div>
 
-          <FaExternalLinkAlt />
-         </li>
-         <li className="flex items-center gap-2">
-          <Link href="">Rolex.org</Link>
+       <div className="mt-8 md:hidden">
+        <h2 className="mb-2 text-sm font-bold">About Rolex</h2>
 
-          <FaExternalLinkAlt />
-         </li>
-        </ul>
-       </li>
-      </ul>
-     </li>
-    </ul>
-   </div>
-   <div className="container mx-auto border-t mt-16 pt-6">
-    <div className="flex flex-col gap-4 justify-between">
-     <div className="flex items-center gap-2">
-      <AiOutlineGlobal />
-      <span>International: English</span>
+        <div className="flex flex-col gap-2">
+         {aboutRolexLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="text-xs hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+       </div>
+
+       <div className="mt-8 md:hidden">
+        <h2 className="mb-2 text-sm font-bold">Sports, Arts and Planet</h2>
+
+        <div className="flex flex-col gap-2">
+         {sportsLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="text-xs hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+       </div>
+      </div>
+
+      {/* ================= CỘT 2 ================= */}
+
+      <div>
+       {/* MOBILE: BUYING HIỆN ĐẦU CỘT */}
+       <div className="md:hidden">
+        <h2 className="mb-2 text-sm font-bold leading-tight">
+         Buying and
+         <br />
+         servicing
+        </h2>
+
+        <div className="flex flex-col gap-2">
+         {buyingLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="text-xs hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+
+        <div className="mt-6 flex flex-col gap-2">
+         {locationLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="text-xs hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+       </div>
+
+       {/* DESKTOP */}
+       <div className="hidden md:block">
+        <div className="mb-8">
+         <h2 className="mb-2 text-2xl font-bold">Watchmaking</h2>
+
+         {watchmakingLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="block hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+
+        <div className="mb-8">
+         <h2 className="mb-2 text-2xl font-bold">Oyster Story</h2>
+
+         {oysterStoryLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="block hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+
+        <div className="mb-8">
+         <Link href="/about-rolex" className="mb-2 text-2xl font-bold">
+          About Rolex
+         </Link>
+
+         <div className="flex flex-col gap-2">
+          {aboutRolexLinks.map((item) => (
+           <Link key={item.name} href={item.link} className="hover:text-[#127749]">
+            {item.name}
+           </Link>
+          ))}
+         </div>
+        </div>
+
+        <div className="mb-8">
+         <h2 className="mb-2 text-2xl font-bold">
+          Sports, Arts and
+          <br />
+          Planet
+         </h2>
+
+         <div className="flex flex-col gap-2">
+          {sportsLinks.map((item) => (
+           <Link key={item.name} href={item.link} className="hover:text-[#127749]">
+            {item.name}
+           </Link>
+          ))}
+         </div>
+        </div>
+
+        <div className="mb-8">
+         {rolexFamilyLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+
+        <div>
+         <h2 className="mb-2 text-2xl font-bold">Buying and servicing</h2>
+
+         <div className="flex flex-col gap-2">
+          {buyingLinks.map((item) => (
+           <Link key={item.name} href={item.link} className="hover:text-[#127749]">
+            {item.name}
+           </Link>
+          ))}
+         </div>
+
+         <div className="mt-8 flex flex-col gap-2">
+          {locationLinks.map((item) => (
+           <Link key={item.name} href={item.link} className="hover:text-[#127749]">
+            {item.name}
+           </Link>
+          ))}
+         </div>
+        </div>
+       </div>
+
+       {/* MOBILE: SUPPORT */}
+       <div className="mt-10 md:hidden">
+        <h2 className="mb-2 text-sm font-bold">Help and support</h2>
+
+        <div className="flex flex-col gap-2">
+         {supportLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="text-xs hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+       </div>
+
+       <div className="mt-8 md:hidden">
+        <h2 className="mb-2 text-sm font-bold">Accessibility</h2>
+
+        {accessibilityLinks.map((item) => (
+         <Link key={item.name} href={item.link} className="text-xs hover:text-[#127749]">
+          {item.name}
+         </Link>
+        ))}
+       </div>
+
+       <div className="mt-8 md:hidden">
+        <h2 className="mb-2 text-sm font-bold">Media</h2>
+
+        <div className="flex flex-col gap-2">
+         {mediaLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="text-xs hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+       </div>
+
+       <div className="mt-8 md:hidden">
+        <h2 className="mb-3 text-sm font-bold">Official channels</h2>
+
+        <div className="flex flex-col gap-2">
+         {socialLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="flex items-center gap-2 text-xs hover:text-[#127749]">
+           {item.icon}
+           <span>{item.name}</span>
+          </Link>
+         ))}
+        </div>
+       </div>
+      </div>
+
+      {/* ================= CỘT 3 - DESKTOP ================= */}
+
+      <div className="col-span-2 hidden md:block md:col-span-1">
+       <div className="mb-8">
+        <h2 className="mb-2 font-bold">Help and support</h2>
+
+        <div className="flex flex-col gap-2">
+         {supportLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+       </div>
+
+       <div className="mb-8">
+        <h2 className="mb-2 font-bold">Accessibility</h2>
+
+        {accessibilityLinks.map((item) => (
+         <Link key={item.name} href={item.link} className="hover:text-[#127749]">
+          {item.name}
+         </Link>
+        ))}
+       </div>
+
+       <div className="mb-8">
+        <h2 className="mb-2 font-bold">Media</h2>
+
+        <div className="flex flex-col gap-2">
+         {mediaLinks.map((item) => (
+          <Link key={item.name} href={item.link} className="hover:text-[#127749]">
+           {item.name}
+          </Link>
+         ))}
+        </div>
+       </div>
+
+       <div className="mb-8">
+        <h2 className="mb-3 font-bold">Official channels</h2>
+
+        <div className="flex flex-col gap-2">
+         {socialLinks.map((item) => (
+          <Link
+           key={item.name}
+           href={item.link}
+           target={item.link.startsWith("http") ? "_blank" : undefined}
+           className="flex items-center gap-2 hover:text-[#127749]">
+           {item.icon}
+
+           <span>{item.name}</span>
+          </Link>
+         ))}
+        </div>
+       </div>
+
+       <div>
+        <h2 className="mb-3 font-bold">Our platforms</h2>
+
+        <div className="flex flex-col gap-2">
+         {platformLinks.map((item) => (
+          <Link key={item.name} href={item.link} target={item.link.startsWith("http") ? "_blank" : undefined} className="hover:text-[#127749]">
+           {item.name} ↗
+          </Link>
+         ))}
+        </div>
+       </div>
+      </div>
      </div>
     </div>
-    <div className="mt-8 flex gap-2 items-center justify-center">
-     <Link className="hover:text-[#127749]" href="legal-notices/terms-of-use">
-      Terms of use
-     </Link>
-     <span>-</span>
-     <Link className="hover:text-[#127749]" href="legal-notices/privacy-notice">
-      Privacy notice
-     </Link>
-     <span>-</span>
-     <Link className="hover:text-[#127749]" href="legal-notices/cookies">
-      Cookies
-     </Link>
-    </div>
-   </div>
-   <div className="relative mt-8">
-    <div className="w-full aspect-[400/500] md:aspect-[1920/450] bg-center bg-no-repeat bg-[url('/image/Footer/rolex-com-footer-rolex-org-push-cc69-1587746.avif')]"></div>
-    <span className="text-2xl text-wrap md:text-5xl font-bold text-center absolute inset-0 flex items-center justify-center text-white">
-     Discover our Perpetual
-     <br className="md:hidden" />
-     Initiatives
-    </span>
-   </div>
+   </section>
   </footer>
  );
 };
+
+Footer.Layout = "Default";
 
 export default Footer;

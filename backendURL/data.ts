@@ -1,4 +1,10 @@
-const data = [
+export interface MalaysiaLocations {
+ [province: string]: {
+  [district: string]: string[];
+ };
+}
+
+export const malaysiaLocations: MalaysiaLocations = [
     {
         _id: "64b008d15f7dd024acb4a4ab",
         title: "Phương pháp đầu tư tài chính dành cho người ít vốn",

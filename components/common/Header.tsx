@@ -11,6 +11,7 @@ import Language from "~/components/popper/Language";
 import { Button, Dropdown, Navbar, Avatar } from "flowbite-react";
 import { IoSearchOutline } from "react-icons/io5";
 import { HiHeart, HiSearch } from "react-icons/hi";
+import { FaBars, FaHeart } from "react-icons/fa";
 
 const MENU_ITEMS = [
  {
@@ -75,14 +76,14 @@ const Header = () => {
  }, [lastScrollY]);
 
  return (
-  <header className="w-full">
+  <header className="w-full text-[#303234] text-lg">
    <Search isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
    <div
     className={`h-[68px] sticky top-0 bg-white animate-[hide-header_linear] container flex justify-between items-center transition-transform duration-500 ease-in-out sm:px-0 mx-0 bg-white ${showHeader ? "translate-y-0" : "-translate-y-full"}`}>
     {/* Menu */}
     <button onClick={() => setIsOpenMenu(true)} className="flex gap-1 justify-between items-center">
-     <TbMenu size={28} />
-     <span className="hidden lg:block">Menu</span>
+     <FaBars />
+     <span className="hidden lg:block font-medium">Menu</span>
     </button>
 
     {/* Logo */}
@@ -91,7 +92,7 @@ const Header = () => {
     </Link>
 
     {/* Search */}
-    <div className="flex gap-6">
+    <div className="flex gap-6 font-medium">
      <button onClick={() => setIsSearchOpen(true)} className="flex items-center justify-center gap-1">
       <HiSearch size={22} />
       <span className="hidden lg:block">Search</span>
@@ -101,7 +102,7 @@ const Header = () => {
       <span className="hidden lg:block">Location</span>
      </button>
      <button className="flex items-center justify-center gap-1">
-      <HiHeart size={22} />
+      <FaHeart className="text-base" />
       <span className="hidden lg:block">Favourites</span>
      </button>
     </div>
@@ -113,7 +114,7 @@ const Header = () => {
     transition-transform duration-500 ease-in-out
     ${isOpenMenu ? "translate-x-0" : "-translate-x-full"}
   `}>
-    <ul className="p-24 flex flex-col gap-3">
+    <ul className="p-6 md:p-24 flex flex-col gap-3">
      <li className="text-xl font-bold text-[#127749]">
       <Link href="">Featured</Link>
      </li>
@@ -123,15 +124,15 @@ const Header = () => {
      </li>
 
      <li className="text-xl font-bold hover:text-[#127749]">
-      <Link href="">Watchmaking</Link>
+      <Link href="/watchmaking">Watchmaking</Link>
      </li>
 
      <li className="text-xl font-bold hover:text-[#127749]">
-      <Link href="">Oyster Story</Link>
+      <Link href="/oyster-story">Oyster Story</Link>
      </li>
 
      <li className="text-xl font-bold hover:text-[#127749]">
-      <Link href="">About Rolex</Link>
+      <Link href="/about-rolex">About Rolex</Link>
      </li>
 
      <li className="text-xl font-bold hover:text-[#127749]">

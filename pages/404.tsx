@@ -4,17 +4,29 @@ export default function Custom404() {
  return (
   <main className="bg-white text-[#111]">
    {/* TITLE */}
-   <section className="pt-32 pb-16 md:pt-40 md:pb-24">
-    <div className="container">
-     <h1 className="text-4xl font-bold md:text-6xl">This page is not available</h1>
-    </div>
-   </section>
 
    {/* MAIN IMAGE */}
-   <section>
+   <section className="relative">
     <figure className="h-[420px] w-full overflow-hidden md:h-[650px]">
-     <img src="https://media.rolex.com/image/upload/q_auto/f_auto/c_limit,w_1920/v1/rolexcom/404" alt="Rolex" className="h-full w-full object-cover" />
+     <picture>
+      {/* Ảnh Mobile */}
+      <source
+       media="(max-width: 767px)"
+       srcSet="https://media.rolex.com/image/upload/q_auto:eco/f_auto/c_limit,w_1600/v1708384191/rolexcom/404/rolex-404-day-date-m228236-0012-2207jva-001-portrait"
+      />
+
+      {/* Ảnh Desktop */}
+      <img
+       src="https://media.rolex.com/image/upload/q_auto:eco/f_auto/c_limit,w_1920/v1708385846/rolexcom/404/rolex-404-day-date-m228236-0012-2207jva-001"
+       alt="This page is not available"
+       className="h-full w-full object-cover"
+      />
+     </picture>
     </figure>
+
+    <div className="absolute inset-0 flex items-center justify-center">
+     <h1 className="w-1/2 text-center text-4xl font-bold text-white md:text-6xl">This page is not available</h1>
+    </div>
    </section>
 
    {/* EXPLORE ROLEX COLLECTION */}
@@ -38,7 +50,7 @@ export default function Custom404() {
       {/* IMAGE */}
       <figure className="overflow-hidden">
        <img
-        src="https://media.rolex.com/image/upload/q_auto/f_auto/c_limit,w_640/v1/rolexcom/404/find-rolex"
+        src="https://media.rolex.com/image/upload/q_auto:eco/f_auto/c_limit,w_1920/v1708403761/rolexcom/404/rolex-404-find-your-rolex-m124300-0001-2010jva-001"
         alt="Find your Rolex"
         className="w-full object-cover transition duration-700 hover:scale-105"
        />
@@ -54,7 +66,7 @@ export default function Custom404() {
       {/* IMAGE */}
       <figure className="order-2 overflow-hidden md:order-1">
        <img
-        src="https://media.rolex.com/image/upload/q_auto/f_auto/c_limit,w_640/v1/rolexcom/404/find-retailer"
+        src="https://media.rolex.com/image/upload/q_auto:eco/f_auto/c_limit,w_1920/v1708385846/rolexcom/404/rolex-404-day-date-m228236-0012-2207jva-001"
         alt="Official Rolex Retailer"
         className="w-full object-cover transition duration-700 hover:scale-105"
        />

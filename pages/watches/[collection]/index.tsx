@@ -51,7 +51,7 @@ export default function Collection() {
    <section className="relative h-[650px] min-h-[600px] overflow-hidden md:h-screen">
     <picture className="absolute inset-0 h-full w-full">
      <img
-      src="https://media.rolex.com/image/upload/q_auto/f_auto/v1/rolexcom/collection/air-king"
+      src="https://media.rolex.com/image/upload/q_auto/f_auto/c_limit,w_1920/v1785418829/rolexcom/collection/family-pages/professional-watches/air-king/family-page/2026/professional-watches-air-king-m126900-0001-cover"
       alt="Rolex Air-King"
       className="h-full w-full object-cover"
      />
@@ -169,7 +169,7 @@ export default function Collection() {
 
    <section className="relative h-[700px] overflow-hidden md:h-screen">
     <img
-     src="https://media.rolex.com/image/upload/q_auto/f_auto/v1/rolexcom/collection/air-king/beautyshot"
+     src="https://media.rolex.com/image/upload/q_auto/f_auto/c_limit,w_1920/v1784734242/rolexcom/collection/family-pages/professional-watches/air-king/family-page/2026/professional-watches-air-king-push-univers"
      alt="Air-King beauty shot"
      className="h-full w-full object-cover"
     />
@@ -200,7 +200,7 @@ export default function Collection() {
 
       <div className="order-2 md:order-1">
        <img
-        src="https://media.rolex.com/image/upload/q_auto/f_auto/v1/rolexcom/collection/air-king/air-king-detail"
+        src="https://media.rolex.com/image/upload/q_auto/f_auto/c_limit,w_1920/v1784734242/rolexcom/collection/family-pages/professional-watches/air-king/family-page/2026/professional-watches-air-king-push-univers"
         alt="Air-King details"
         className="mx-auto max-h-[600px] w-full object-contain"
        />

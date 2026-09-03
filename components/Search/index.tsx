@@ -28,7 +28,7 @@ export default function Search({ isOpen, onClose }: SearchProps) {
 
  return (
   <div className="fixed inset-0 z-[9999] bg-white">
-   <button onClick={onClose} className="absolute right-6 top-6 cursor-pointer text-2xl" aria-label="Close search">
+   <button onClick={onClose} className="absolute md:right-6 right-2 top-2 md:top-6 cursor-pointer text-2xl" aria-label="Close search">
     <FaTimes />
    </button>
 
