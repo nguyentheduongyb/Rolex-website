@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { FaLock, FaTruck, FaShieldAlt, FaCrown } from "react-icons/fa";
 
-import CheckoutForm from "./CheckoutForm";
+import CheckoutForm from "~/components/checkout/CheckoutForm";
 
 import type { RolexWatch } from "~/data/rolexWatches";
 interface CartItem extends RolexWatch {

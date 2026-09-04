@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { malaysiaLocations } from "../../../data/malaysiaLocations";
+import { malaysiaLocations } from "../../data/malaysiaLocations";
 import { FaHeart, FaMinus, FaPlus } from "react-icons/fa";
 
 interface FormData {
@@ -27,14 +27,13 @@ import type { RolexWatch } from "~/data/rolexWatches";
 interface CartItem extends RolexWatch {
  quantity: number;
 }
-
-interface CheckoutFormProps {
- watchData: CartItem[];
-}
-
 const MAX_QUANTITY = 2;
 
-export default function CheckoutForm({ watchData }: CheckoutFormProps) {
+interface CheckoutFormProps {
+ watchData?: CartItem[];
+}
+
+export default function CheckoutForm({ watchData = [] }: CheckoutFormProps) {
  // ==========================================
  // CUSTOMER FORM
  // ==========================================
