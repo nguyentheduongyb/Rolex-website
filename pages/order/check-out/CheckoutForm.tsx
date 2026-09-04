@@ -22,14 +22,14 @@ interface TrackingData {
  landing_page: string;
 }
 
-interface WatchData {
- model: string;
+import type { RolexWatch } from "~/data/rolexWatches";
+
+interface CartItem extends RolexWatch {
  quantity: number;
- price: number;
 }
 
 interface CheckoutFormProps {
- watchData: WatchData;
+ watchData: CartItem[];
 }
 
 const MAX_QUANTITY = 2;
@@ -50,6 +50,22 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
  });
 
  // ==========================================
+ // PRODUCTS
+ // ==========================================
+
+ const [cartItems, setCartItems] = useState<CartItem[]>(() => watchData);
+
+ useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  localStorage.setItem("rolex_cart", JSON.stringify(cartItems));
+
+  console.log("Updated cart:", cartItems);
+
+  window.dispatchEvent(new Event("cartUpdated"));
+ }, [cartItems]);
+
+ // ==========================================
  // TRACKING DATA
  // ==========================================
 
@@ -62,12 +78,6 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
   fbclid: "",
   landing_page: "",
  });
-
- // ==========================================
- // QUANTITY
- // ==========================================
-
- const [quantity, setQuantity] = useState<number>(Math.min(Math.max(watchData.quantity || 1, 1), MAX_QUANTITY));
 
  // ==========================================
  // SUBMITTING
@@ -108,7 +118,6 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
 
   const hasTracking = tracking.utm_source || tracking.utm_medium || tracking.utm_campaign || tracking.utm_content || tracking.utm_term || tracking.fbclid;
 
-  // Có tracking từ URL
   if (hasTracking) {
    localStorage.setItem("trackingData", JSON.stringify(tracking));
 
@@ -117,8 +126,6 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
    return;
   }
 
-  // Không có tracking trên URL
-  // → lấy dữ liệu tracking cũ
   const savedTracking = localStorage.getItem("trackingData");
 
   if (savedTracking) {
@@ -173,10 +180,20 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
  }, [selectedDistrict]);
 
  // ==========================================
+ // TOTAL QUANTITY
+ // ==========================================
+
+ const totalQuantity = useMemo(() => {
+  return cartItems.reduce((total, item) => total + item.quantity, 0);
+ }, [cartItems]);
+
+ // ==========================================
  // TOTAL PRICE
  // ==========================================
 
- const totalPrice = watchData.price * quantity;
+ const totalPrice = useMemo(() => {
+  return cartItems.reduce((total, item) => total + item.priceNew * item.quantity, 0);
+ }, [cartItems]);
 
  // ==========================================
  // FORMAT PRICE
@@ -187,28 +204,6 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
    minimumFractionDigits: 0,
    maximumFractionDigits: 2,
   });
- };
-
- // ==========================================
- // CHANGE QUANTITY
- // ==========================================
-
- const handleDecreaseQuantity = () => {
-  setQuantityMessage("");
-
-  setQuantity((prev) => Math.max(1, prev - 1));
- };
-
- const handleIncreaseQuantity = () => {
-  if (quantity >= MAX_QUANTITY) {
-   setQuantityMessage("A maximum of 2 watches can be purchased per order.");
-
-   return;
-  }
-
-  setQuantityMessage("");
-
-  setQuantity((prev) => prev + 1);
  };
 
  // ==========================================
@@ -224,13 +219,11 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
     [name]: value,
    };
 
-   // Change Province
    if (name === "province") {
     newData.district = "";
     newData.zipcode = "";
    }
 
-   // Change District
    if (name === "district") {
     newData.zipcode = "";
    }
@@ -248,11 +241,27 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
 
   if (isSubmitting) return;
 
+  if (!cartItems.length) {
+   alert("Your shopping bag is empty.");
+
+   return;
+  }
+
   setIsSubmitting(true);
+
+  const products = cartItems.map((item) => ({
+   id: item.id,
+   model: item.name || "",
+   reference: item.reference || "",
+   quantity: item.quantity,
+   price: item.priceNew,
+   totalPrice: item.priceNew * item.quantity,
+  }));
 
   const dataToSend = {
    submitted_at: new Date().toISOString(),
 
+   // CUSTOMER
    fullName: formData.fullName,
    phone: formData.phone,
    email: formData.email,
@@ -261,11 +270,12 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
    district: formData.district,
    zipcode: formData.zipcode,
 
-   // PRODUCT
-   productName: watchData.model,
-   quantity: quantity,
-   price: watchData.price,
-   totalPrice: watchData.price * quantity,
+   // PRODUCTS
+   products,
+
+   // ORDER TOTAL
+   totalQuantity,
+   totalPrice,
 
    // TRACKING
    utm_source: trackingData.utm_source || "",
@@ -280,12 +290,12 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
   console.log("Data sending:", dataToSend);
 
   try {
-   await fetch("https://script.google.com/macros/s/AKfycbxE1tM0Hu4cK2WvuHkF0HPowYKeYX93IDxEQRT5c_4TmpAzthJVlM-YI-kU4GJJK5_S/exec", {
+   await fetch("https://script.google.com/macros/s/AKfycbzTj3MrZq9-y4cwTm8Uq9qGgdjQmBHgbij3g-kmdk4TwB0gOKjIT-ixTS_DqLwJF69J/exec", {
     method: "POST",
     mode: "no-cors",
     body: JSON.stringify(dataToSend),
    });
-   console.log(dataToSend);
+
    alert("Your information has been submitted successfully!");
   } catch (error) {
    console.error("Error sending data:", error);
@@ -295,7 +305,28 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
    setIsSubmitting(false);
   }
  };
+ const updateQuantity = (id: string, newQuantity: number) => {
+  if (newQuantity < 1) return;
 
+  if (newQuantity > MAX_QUANTITY) {
+   setQuantityMessage(`A maximum of ${MAX_QUANTITY} watches of the same model can be purchased.`);
+
+   return;
+  }
+
+  setQuantityMessage("");
+
+  setCartItems((prev) =>
+   prev.map((item) =>
+    item.id === id
+     ? {
+        ...item,
+        quantity: newQuantity,
+       }
+     : item,
+   ),
+  );
+ };
  return (
   <div className="border border-[#dededb] bg-white">
    {/* ==========================================
@@ -313,96 +344,68 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
      </button>
     </div>
 
-    {/* PRODUCT */}
+    {/* PRODUCTS */}
 
-    <div className="flex gap-5">
-     {/* IMAGE */}
+    <div className="space-y-6">
+     {cartItems.map((item) => (
+      <div key={item.id} className="flex gap-5">
+       {/* IMAGE */}
 
-     <div className="flex h-[130px] w-[100px] shrink-0 items-center justify-center md:h-[150px] md:w-[120px]">
-      <img src="/image/watches/details/m126234-0051.avif" alt={watchData.model || "Watch"} className="h-full w-full object-contain" />
-     </div>
-
-     {/* PRODUCT INFO */}
-
-     <div className="flex flex-1 flex-col">
-      <div>
-       <h3 className="font-semibold">{watchData.model || "No watch selected"}</h3>
-      </div>
-
-      <div className="mt-auto flex items-end justify-between gap-4">
-       {/* QUANTITY */}
-
-       <div className="text-sm">
-        <p className="mb-2 text-[#666]">Quantity</p>
-
-        <div className="flex h-10 items-center border border-[#dededb] bg-white">
-         {/* MINUS */}
-
-         <button
-          type="button"
-          onClick={handleDecreaseQuantity}
-          disabled={quantity <= 1}
-          className="
-                      flex
-                      h-full
-                      w-10
-                      items-center
-                      justify-center
-                      transition
-                      hover:bg-[#f5f5f5]
-                      disabled:cursor-not-allowed
-                      disabled:opacity-40
-                    ">
-          <FaMinus size={11} />
-         </button>
-
-         {/* NUMBER */}
-
-         <span
-          className="
-                      flex
-                      h-full
-                      min-w-[42px]
-                      items-center
-                      justify-center
-                      border-x
-                      border-[#dededb]
-                      px-3
-                      font-medium
-                    ">
-          {quantity}
-         </span>
-
-         {/* PLUS */}
-
-         <button
-          type="button"
-          onClick={handleIncreaseQuantity}
-          className="
-                      flex
-                      h-full
-                      w-10
-                      cursor-pointer
-                      items-center
-                      justify-center
-                      transition
-                      hover:bg-[#f5f5f5]
-                    ">
-          <FaPlus size={11} />
-         </button>
-        </div>
-
-        {/* MAX QUANTITY MESSAGE */}
-
-        {quantityMessage && <p className="mt-2 max-w-[220px] text-xs text-red-500">{quantityMessage}</p>}
+       <div className="flex h-[130px] w-[100px] shrink-0 items-center justify-center md:h-[150px] md:w-[120px]">
+        <img src={item.images.main || "/image/watches/details/m126234-0051.avif"} alt={item.name || "Watch"} className="h-full w-full object-contain" />
        </div>
 
-       {/* SINGLE WATCH PRICE */}
+       {/* PRODUCT INFO */}
 
-       <span className="whitespace-nowrap font-semibold">RM {formatPrice(watchData.price)}</span>
+       <div className="flex flex-1 flex-col">
+        <div>
+         <h3 className="font-semibold">{item.name || "No watch selected"}</h3>
+
+         {item.case.model && <p className="mt-2 text-sm text-[#666]">{item.case.model}</p>}
+
+         {item.reference && <p className="mt-1 text-sm text-[#777]">Reference {item.reference}</p>}
+         {item.quantity && (
+          <p className="mt-1 text-sm text-[#777]">
+           Quantity {item.quantity}, {item.currency} {item.priceNew}
+          </p>
+         )}
+        </div>
+       </div>
+       <div className="flex h-11 items-center border border-[#dededb]">
+        <button
+         type="button"
+         disabled={item.quantity <= 1}
+         onClick={() => updateQuantity(item.id, item.quantity - 1)}
+         className="
+       flex h-full w-11 cursor-pointer
+       items-center justify-center
+       transition hover:bg-[#f5f5f5]
+       disabled:cursor-not-allowed
+       disabled:opacity-30
+      ">
+         <FaMinus size={11} />
+        </button>
+
+        <span className="flex h-full min-w-[46px] items-center justify-center border-x border-[#dededb] text-sm font-medium">{item.quantity}</span>
+
+        <button
+         type="button"
+         onClick={() => updateQuantity(item.id, item.quantity + 1)}
+         className="
+       flex h-full w-11 cursor-pointer
+       items-center justify-center
+       transition hover:bg-[#f5f5f5]
+      ">
+         <FaPlus size={11} />
+        </button>
+       </div>
       </div>
-     </div>
+     ))}
     </div>
+
+    {/* MAX QUANTITY MESSAGE */}
+
+    {quantityMessage && <p className="mt-4 text-xs text-red-500">{quantityMessage}</p>}
 
     {/* PRICE */}
 
@@ -410,7 +413,9 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
      {/* SUBTOTAL */}
 
      <div className="flex justify-between py-2 text-sm">
-      <span>Subtotal</span>
+      <span>
+       Subtotal ({totalQuantity} {totalQuantity === 1 ? "item" : "items"})
+      </span>
 
       <span>RM {formatPrice(totalPrice)}</span>
      </div>
@@ -476,8 +481,6 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
      {/* PHONE + EMAIL */}
 
      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-      {/* PHONE */}
-
       <div>
        <label className="mb-2 ml-2 block text-sm font-semibold">
         Phone number <span className="text-red-500">*</span>
@@ -505,8 +508,6 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
                 "
        />
       </div>
-
-      {/* EMAIL */}
 
       <div>
        <label className="mb-2 ml-2 block text-sm font-semibold">
@@ -570,8 +571,6 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
      {/* PROVINCE + DISTRICT */}
 
      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-      {/* PROVINCE */}
-
       <div>
        <label className="mb-2 ml-2 block text-sm font-semibold">
         Province <span className="text-red-500">*</span>
@@ -604,8 +603,6 @@ export default function CheckoutForm({ watchData }: CheckoutFormProps) {
         ))}
        </select>
       </div>
-
-      {/* DISTRICT */}
 
       <div>
        <label className="mb-2 ml-2 block text-sm font-semibold">

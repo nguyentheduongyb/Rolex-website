@@ -12,7 +12,8 @@ import { Button, Dropdown, Navbar, Avatar } from "flowbite-react";
 import { IoSearchOutline } from "react-icons/io5";
 import { HiHeart, HiSearch } from "react-icons/hi";
 import { FaBars, FaHeart } from "react-icons/fa";
-
+import { LiaShoppingCartSolid } from "react-icons/lia";
+import CartHeader from "~/components/common/CartHeader";
 const MENU_ITEMS = [
  {
   icon: <MdLanguage />,
@@ -101,10 +102,7 @@ const Header = () => {
       <MdLocationOn size={22} />
       <span className="hidden lg:block">Location</span>
      </button>
-     <button className="flex items-center justify-center gap-1">
-      <FaHeart className="text-base" />
-      <span className="hidden lg:block">Favourites</span>
-     </button>
+     <CartHeader />
     </div>
    </div>
 

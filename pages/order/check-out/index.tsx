@@ -1,32 +1,64 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { FaBars, FaSearch, FaHeart, FaLock, FaTruck, FaShieldAlt, FaCrown } from "react-icons/fa";
+import { FaLock, FaTruck, FaShieldAlt, FaCrown } from "react-icons/fa";
 
 import CheckoutForm from "./CheckoutForm";
-interface WatchData {
- model: string;
+
+import type { RolexWatch } from "~/data/rolexWatches";
+interface CartItem extends RolexWatch {
  quantity: number;
- price: number;
 }
+
 const Checkout = () => {
- const [watchData, setWatchData] = useState<WatchData>({
-  model: "",
-  quantity: 1,
-  price: 123,
- });
+ const [cartItems, setCartItems] = useState<CartItem[]>([]);
+ const [isLoaded, setIsLoaded] = useState(false);
+
+ // =========================================================
+ // LOAD CART FROM LOCAL STORAGE
+ // =========================================================
+ useEffect(() => {
+  try {
+   const savedCart = localStorage.getItem("rolex_cart");
+
+   if (savedCart) {
+    const parsedCart = JSON.parse(savedCart);
+
+    if (Array.isArray(parsedCart)) {
+     setCartItems(parsedCart);
+    } else {
+     setCartItems([]);
+    }
+   } else {
+    setCartItems([]);
+   }
+  } catch (error) {
+   console.error("Cannot load checkout data:", error);
+   setCartItems([]);
+  } finally {
+   setIsLoaded(true);
+  }
+ }, []);
+
+ // =========================================================
+ // LOADING
+ // =========================================================
+ if (!isLoaded) {
+  return (
+   <main className="flex min-h-screen items-center justify-center bg-[#f8f8f6]">
+    <p className="text-sm text-[#666]">Loading checkout...</p>
+   </main>
+  );
+ }
+
  return (
   <main className="min-h-screen bg-[#f8f8f6] text-[#303234]">
    {/* =========================================================
-       HEADER
-   ========================================================= */}
-
-   {/* =========================================================
-       STEPS
-   ========================================================= */}
+          STEPS
+      ========================================================= */}
 
    <div className="border-b border-[#dededb]">
     <div className="container">
-     <div className="flex flex-wrap py-4 items-center justify-between gap-8 overflow-x-auto text-xs md:text-sm">
+     <div className="flex flex-wrap items-center justify-between gap-8 overflow-x-auto py-4 text-xs md:text-sm">
       <CheckoutStep number="1" title="Shopping bag" active />
 
       <CheckoutStep number="2" title="Customer information" />
@@ -41,8 +73,8 @@ const Checkout = () => {
    </div>
 
    {/* =========================================================
-       MAIN CONTENT
-   ========================================================= */}
+          MAIN CONTENT
+      ========================================================= */}
 
    <section className="container py-10 md:py-14">
     {/* TITLE */}
@@ -63,21 +95,19 @@ const Checkout = () => {
 
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
      {/* =====================================================
-         LEFT COLUMN
-     ===================================================== */}
+              LEFT COLUMN
+          ===================================================== */}
 
-     <CheckoutForm watchData={watchData} />
+     <CheckoutForm watchData={cartItems} />
 
      {/* =====================================================
-         RIGHT COLUMN
-     ===================================================== */}
+              RIGHT COLUMN
+          ===================================================== */}
 
      <aside className="flex flex-col gap-5">
       {/* BENEFITS */}
 
       <div className="border border-[#dededb] bg-white p-6">
-       {/* DELIVERY */}
-
        <div className="flex gap-5">
         <FaTruck className="mt-1 text-xl" />
 
@@ -88,8 +118,6 @@ const Checkout = () => {
         </div>
        </div>
 
-       {/* GUARANTEE */}
-
        <div className="mt-7 flex gap-5">
         <FaShieldAlt className="mt-1 text-xl" />
 
@@ -99,8 +127,6 @@ const Checkout = () => {
          <p className="mt-1 text-sm text-[#666]">A guarantee of excellence</p>
         </div>
        </div>
-
-       {/* SECURITY */}
 
        <div className="mt-7 flex gap-5">
         <FaLock className="mt-1 text-xl" />
@@ -155,8 +181,8 @@ const Checkout = () => {
    </section>
 
    {/* =========================================================
-       FOOTER BENEFITS
-   ========================================================= */}
+          FOOTER BENEFITS
+      ========================================================= */}
 
    <footer className="border-t border-[#dededb] bg-[#f8f8f6]">
     <div className="container grid gap-8 py-8 md:grid-cols-4">
