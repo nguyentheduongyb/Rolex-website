@@ -1,23 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { Carousel } from "flowbite-react";
 
-import { LiaPercentSolid } from "react-icons/lia";
-import { HiFire } from "react-icons/hi";
-
-import data from "~/backendURL/data";
-import { array } from "prop-types";
-import { BsDiscord, BsGithub, BsFacebook, BsInstagram, BsTwitter, BsBookmarkHeartFill, BsCoin, BsFillHeartFill } from "react-icons/bs";
-import { BiHeart } from "react-icons/bi";
-import { LiaUserSolid } from "react-icons/lia";
-import { FaHeadphones } from "react-icons/fa";
-import { FcSportsMode } from "react-icons/fc";
-import { PiGameController } from "react-icons/pi";
-import { SiYourtraveldottv } from "react-icons/si";
-import { AiFillHome } from "react-icons/ai";
 const HomePage = () => {
  return (
   <div className="">
