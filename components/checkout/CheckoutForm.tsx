@@ -23,6 +23,7 @@ interface TrackingData {
 }
 
 import type { RolexWatch } from "~/data/rolexWatches";
+import { useRouter } from "next/router";
 
 interface CartItem extends RolexWatch {
  quantity: number;
@@ -34,6 +35,7 @@ interface CheckoutFormProps {
 }
 
 export default function CheckoutForm({ watchData = [] }: CheckoutFormProps) {
+ const router = useRouter();
  // ==========================================
  // CUSTOMER FORM
  // ==========================================
@@ -235,74 +237,32 @@ export default function CheckoutForm({ watchData = [] }: CheckoutFormProps) {
  // SUBMIT GOOGLE SHEET
  // ==========================================
 
- const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+ const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
-  if (isSubmitting) return;
+  const orderData = {
+   orderId: `RLX-${Date.now()}`,
 
-  if (!cartItems.length) {
-   alert("Your shopping bag is empty.");
+   customer: {
+    fullName: formData.fullName,
+    phone: formData.phone,
+    email: formData.email,
+    address: formData.address,
+    province: formData.province,
+    district: formData.district,
+    zipcode: formData.zipcode,
+   },
 
-   return;
-  }
+   items: watchData,
 
-  setIsSubmitting(true);
-
-  const products = cartItems.map((item) => ({
-   id: item.id,
-   model: item.name || "",
-   reference: item.reference || "",
-   quantity: item.quantity,
-   price: item.priceNew,
-   totalPrice: item.priceNew * item.quantity,
-  }));
-
-  const dataToSend = {
-   submitted_at: new Date().toISOString(),
-
-   // CUSTOMER
-   fullName: formData.fullName,
-   phone: formData.phone,
-   email: formData.email,
-   address: formData.address,
-   province: formData.province,
-   district: formData.district,
-   zipcode: formData.zipcode,
-
-   // PRODUCTS
-   products,
-
-   // ORDER TOTAL
-   totalQuantity,
-   totalPrice,
-
-   // TRACKING
-   utm_source: trackingData.utm_source || "",
-   utm_medium: trackingData.utm_medium || "",
-   utm_campaign: trackingData.utm_campaign || "",
-   utm_content: trackingData.utm_content || "",
-   utm_term: trackingData.utm_term || "",
-   fbclid: trackingData.fbclid || "",
-   landing_page: trackingData.landing_page || "",
+   createdAt: new Date().toISOString(),
   };
 
-  console.log("Data sending:", dataToSend);
+  // Lưu đơn hàng để trang success lấy dữ liệu
+  localStorage.setItem("rolex_last_order", JSON.stringify(orderData));
 
-  try {
-   await fetch("https://script.google.com/macros/s/AKfycbzTj3MrZq9-y4cwTm8Uq9qGgdjQmBHgbij3g-kmdk4TwB0gOKjIT-ixTS_DqLwJF69J/exec", {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify(dataToSend),
-   });
-
-   alert("Your information has been submitted successfully!");
-  } catch (error) {
-   console.error("Error sending data:", error);
-
-   alert("Something went wrong. Please try again.");
-  } finally {
-   setIsSubmitting(false);
-  }
+  // Chuyển sang trang thành công
+  router.push("/order/success");
  };
  const updateQuantity = (id: string, newQuantity: number) => {
   if (newQuantity < 1) return;
