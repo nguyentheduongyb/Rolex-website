@@ -8,6 +8,8 @@ import { BsDownload } from "react-icons/bs";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 
 import { rolexWatches } from "~/data/rolexWatches";
+import WatchCards from "~/components/watches/WatchesYouMayLike";
+import WatchesYouMayLike from "~/components/watches/WatchesYouMayLike";
 
 export default function Model() {
  const router = useRouter();
@@ -65,7 +67,7 @@ export default function Model() {
   localStorage.setItem("rolex_cart", JSON.stringify(cart));
 
   // Cập nhật CartHeader
-  window.dispatchEvent(new Event("cartUpdated"));
+  window.dispatchEvent(new Event("cartAdded"));
  };
 
  return (
@@ -74,9 +76,9 @@ export default function Model() {
 
    {/* HERO */}
    <section className="bg-[#D8D8D8]">
-    <div className="container relative h-[600px] md:h-[570px]">
+    <div className="container relative h-[680px] md:h-[570px]">
      {/* ADD TO FAVOURITES */}
-     <button className="absolute left-0 top-6 z-10 flex cursor-pointer items-center gap-1 text-[14px] font-bold text-primary hover:text-black md:top-[190px] md:gap-2 md:text-base">
+     <button className="absolute left-0 top-6 z-1 flex cursor-pointer items-center gap-1 text-[14px] font-bold text-primary hover:text-black md:top-[190px] md:gap-2 md:text-base">
       <FaHeart />
       <span>Add to favourites</span>
      </button>
@@ -91,7 +93,7 @@ export default function Model() {
      </figure>
 
      {/* MAIN WATCH */}
-     <figure className="absolute left-1/2 flex h-[320px] w-[320px] -translate-x-1/2 items-center justify-center md:h-[500px] md:w-[460px]">
+     <figure className="absolute left-1/2 flex h-[400px] w-[400px] -translate-x-1/2 items-center justify-center md:h-[500px] md:w-[460px]">
       <img className="h-full w-full object-contain" src={watch.images.main} alt={watch.name} />
      </figure>
 
@@ -222,41 +224,47 @@ export default function Model() {
    {/* SECTION ROLESOR */}
    <section className="bg-[#E3E5E9]">
     <div className="container grid items-center justify-center gap-8 py-12 md:w-3/4 md:grid-cols-2">
-     <div className="flex flex-col gap-32">
+     <div className="flex flex-col gap-8 md:gap-32">
       <div className="flex flex-col gap-4">
-       <p className="text-2xl uppercase">{watch.contentPage.rolesor.title}</p>
+       <p className="text-2xl uppercase">{watch.contentPage.rolesor[0].title}</p>
 
-       <h2 className="text-4xl font-bold text-[rgb(66,105,75)] md:text-6xl">{watch.contentPage.rolesor.highlights[0]?.title}</h2>
+       <h2 className="text-4xl font-bold text-[rgb(66,105,75)] md:text-6xl">{watch.contentPage.rolesor[0].highlights[0]?.title}</h2>
 
-       {watch.contentPage.rolesor.highlights.map((highlight, index) => (
+       {watch.contentPage.rolesor[0].highlights.map((highlight, index) => (
         <p key={index} className="text-xl font-light md:text-2xl">
          {highlight.description}
         </p>
        ))}
       </div>
-      <figure
-       className="md:hidden aspect-[400/400] bg-center bg-no-repeat"
-       style={{
-        backgroundImage: `url(${watch.contentPage.rolesor.image.desktop})`,
-       }}
-      />
-      <div className="flex flex-col gap-4">
-       <p className="text-2xl uppercase">The {watch.bracelet.type} bracelet</p>
+      {(watch.contentPage.rolesor[0].image?.mobile || watch.contentPage.rolesor[0].image?.desktop) && (
+       <figure
+        className="md:hidden aspect-[400/400] bg-center bg-no-repeat"
+        style={{
+         backgroundImage: `url(${watch.contentPage.rolesor[0].image.desktop})`,
+        }}></figure>
+      )}
 
-       <h2 className="text-4xl font-bold text-[rgb(66,105,75)] md:text-6xl">{watch.bracelet.type}</h2>
+      {watch.contentPage.rolesor[1] && (
+       <div className="flex flex-col gap-4">
+        <p className="text-2xl uppercase">{watch.contentPage.rolesor[1].title || ""}</p>
 
-       <p className="text-xl font-light md:text-2xl">Material: {watch.bracelet.material}</p>
+        <h2 className="text-4xl font-bold text-[rgb(66,105,75)] md:text-6xl">{watch.contentPage.rolesor[1].highlights[0]?.title}</h2>
 
-       <p className="text-xl font-light md:text-2xl">Clasp: {watch.bracelet.clasp}</p>
-      </div>
+        {watch.contentPage.rolesor[1].highlights.map((highlight, index) => (
+         <p key={index} className="text-xl font-light md:text-2xl">
+          {highlight.description}
+         </p>
+        ))}
+       </div>
+      )}
      </div>
-
-     <figure
-      className="hidden md:block aspect-[400/400] bg-center bg-no-repeat"
-      style={{
-       backgroundImage: `url(${watch.contentPage.rolesor.image.desktop})`,
-      }}
-     />
+     {watch.contentPage.rolesor[1] && (
+      <figure
+       className="hidden md:block aspect-[400/400] bg-center bg-no-repeat"
+       style={{
+        backgroundImage: `url(${watch.contentPage.rolesor[1].image.desktop})`,
+       }}></figure>
+     )}
     </div>
    </section>
 
@@ -561,7 +569,7 @@ export default function Model() {
    </section>
 
    {/* DISCOVER */}
-   <section className="relative px-4 aspect-[400/900] md:aspect-[1526/275] bg-no-repeat bg-center bg-[url('https://media.rolex.com/image/upload/q_auto:eco/f_auto/c_limit,w_1920/v1//rolexcom/model-page/editorial-push/fixed/model-page-editorial-push-fixed-watchmaking-cyclops-lens-2023_watchmaking_features_cyclop_lens_still_ooh_master_rvb')]">
+   <section className="relative px-4 aspect-[400/500] md:aspect-[1526/275] bg-no-repeat bg-center bg-[url('https://media.rolex.com/image/upload/q_auto:eco/f_auto/c_limit,w_1920/v1//rolexcom/model-page/editorial-push/fixed/model-page-editorial-push-fixed-watchmaking-cyclops-lens-2023_watchmaking_features_cyclop_lens_still_ooh_master_rvb')]">
     <div className="container absolute inset-0 flex h-full flex-col justify-center gap-2">
      <h2 className="text-6xl font-bold">At a single glance</h2>
 
@@ -574,48 +582,7 @@ export default function Model() {
    </section>
 
    {/* WATCHES YOU MAY LIKE */}
-   <section className="bg-white py-16">
-    <div className="container">
-     <div className="mb-10 lg:w-1/3">
-      <h2 className="mb-4 text-2xl font-bold">Watches you may like</h2>
-
-      <p>These watches have been selected for you. Add them with the heart icon to your favorites.</p>
-     </div>
-
-     <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-      {rolexWatches
-       .filter((item) => item.id !== watch.id)
-       .slice(0, 3)
-       .map((item) => (
-        <Link
-         href={`/watches/${item.slug}/${item.id.toLowerCase()}`}
-         key={item.id}
-         className="relative min-h-[280px] bg-[#f4f4f4] pb-20 md:grid md:h-[280px] md:grid-cols-[55%_45%] md:pb-0">
-         <button onClick={(e) => e.preventDefault()} className="absolute left-3 top-3 z-10 md:left-8 md:top-8">
-          <FaHeart className="text-[10px] text-primary md:text-xl" />
-         </button>
-
-         <div className="absolute bottom-3 left-3 right-3 z-10 md:static md:ml-8 md:flex md:items-center">
-          <div>
-           <h3 className="mb-1 text-[16px] font-bold md:mb-2 md:text-2xl">{item.name}</h3>
-
-           <p className="text-[12px] leading-relaxed md:max-w-[260px] md:text-lg">{item.title}</p>
-          </div>
-         </div>
-
-         <div
-          className="h-[280px] w-full bg-contain bg-center bg-no-repeat md:col-start-2 md:h-full"
-          style={{
-           backgroundImage: `url(${item.images.main})`,
-          }}
-         />
-
-         <span className="absolute hidden md:bottom-8 md:left-8 md:block md:text-lg md:font-bold">New model</span>
-        </Link>
-       ))}
-     </div>
-    </div>
-   </section>
+   <WatchesYouMayLike watch={watch} />
 
    {/* NEXT COLLECTION */}
    <section className="p-8 text-center">

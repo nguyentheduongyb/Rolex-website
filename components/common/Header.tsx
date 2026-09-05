@@ -80,7 +80,7 @@ const Header = () => {
   <header className="w-full text-[#303234] text-lg">
    <Search isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
    <div
-    className={`h-[68px] sticky top-0 bg-white animate-[hide-header_linear] container flex justify-between items-center transition-transform duration-500 ease-in-out sm:px-0 mx-0 bg-white ${showHeader ? "translate-y-0" : "-translate-y-full"}`}>
+    className={`h-[68px] sticky z-[99999] top-0 bg-white animate-[hide-header_linear] container flex justify-between items-center transition-transform duration-500 ease-in-out sm:px-0 mx-0 bg-white ${showHeader ? "translate-y-0" : "-translate-y-full"}`}>
     {/* Menu */}
     <button onClick={() => setIsOpenMenu(true)} className="flex gap-1 justify-between items-center">
      <FaBars />
