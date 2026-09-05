@@ -341,9 +341,9 @@ const OrderSuccess = () => {
        </Link>
 
        <Link
-        href="/order/cart"
+        href="/order/my-orders"
         className="flex w-full items-center justify-center rounded-full border border-[#303234] py-4 text-sm font-semibold transition-colors hover:bg-[#303234] hover:text-white">
-        View shopping bag
+        My Orders
        </Link>
       </div>
      </aside>

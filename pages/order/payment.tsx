@@ -1,5 +1,5 @@
 "use client";
-
+import Script from "next/script";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -92,6 +92,22 @@ declare global {
 ========================================================= */
 
 const Payment = () => {
+ const formatVietnamDateTime = () => {
+  const now = new Date();
+
+  const formatter = new Intl.DateTimeFormat("sv-SE", {
+   timeZone: "Asia/Ho_Chi_Minh",
+   year: "numeric",
+   month: "2-digit",
+   day: "2-digit",
+   hour: "2-digit",
+   minute: "2-digit",
+   second: "2-digit",
+   hour12: false,
+  });
+
+  return formatter.format(now);
+ };
  const router = useRouter();
 
  const [order, setOrder] = useState<OrderData | null>(null);
@@ -349,6 +365,33 @@ const Payment = () => {
   } catch (error) {
    console.error("Cannot save order history:", error);
   }
+  /* =============================================
+   FACEBOOK PIXEL PURCHASE EVENT
+============================================= */
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
+   window.fbq("track", "Purchase", {
+    value: subtotal,
+    currency: "MYR",
+
+    content_ids: completedOrder.items.map((item) => item.id),
+
+    contents: completedOrder.items.map((item) => {
+     const itemPrice = item.priceNew || item.price || 0;
+
+     return {
+      id: item.id,
+      quantity: item.quantity || 1,
+      item_price: itemPrice,
+     };
+    }),
+
+    content_type: "product",
+
+    num_items: completedOrder.items.reduce((total, item) => {
+     return total + (item.quantity || 1);
+    }, 0),
+   });
+  }
  };
 
  /* =========================================================
@@ -399,7 +442,7 @@ const Payment = () => {
 
    paymentMethod: "Cash on Delivery",
 
-   createdAt: order.createdAt || new Date().toISOString(),
+   createdAt: formatVietnamDateTime(),
 
    orderTotal: subtotal,
 
@@ -848,6 +891,22 @@ const Payment = () => {
      </div>
     </div>
    )}
+
+   <Script id="facebook-pixel" strategy="afterInteractive">
+    {`
+   !function(f,b,e,v,n,t,s)
+   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+   n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+   if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+   n.queue=[];t=b.createElement(e);t.async=!0;
+   t.src=v;s=b.getElementsByTagName(e)[0];
+   s.parentNode.insertBefore(t,s)}(window, document,'script',
+   'https://connect.facebook.net/en_US/fbevents.js');
+
+   fbq('init', '1085083313919944');
+   fbq('track', 'PageView');
+  `}
+   </Script>
   </main>
  );
 };
