@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FaHeart, FaMinus, FaPlus } from "react-icons/fa";
 import Link from "next/link";
 
-import PoliciesPopper from "~/components/popper/information/Policies";
+import PoliciesPopper from "~/components/popper/information/PoliciesPopper";
 import { BsDownload } from "react-icons/bs";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 

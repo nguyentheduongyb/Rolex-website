@@ -262,7 +262,7 @@ export default function CheckoutForm({ watchData = [] }: CheckoutFormProps) {
   localStorage.setItem("rolex_last_order", JSON.stringify(orderData));
 
   // Chuyển sang trang thành công
-  router.push("/order/success");
+  router.push("/order/payment");
  };
  const updateQuantity = (id: string, newQuantity: number) => {
   if (newQuantity < 1) return;

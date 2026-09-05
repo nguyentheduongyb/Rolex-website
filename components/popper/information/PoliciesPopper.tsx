@@ -1,7 +1,7 @@
 function PoliciesPopper({ isOpenPoliciesPopper, onClose }: any) {
  if (!isOpenPoliciesPopper) return null;
  return (
-  <div className={`fixed top-0 left-0 right-0 bg-black/70 z-40 ${isOpenPoliciesPopper ? "translate-x-0" : "-translate-x-full"}`}>
+  <div className={`fixed top-20 left-0 right-0 bg-black/70 z-40 ${isOpenPoliciesPopper ? "translate-x-0" : "-translate-x-full"}`}>
    {/* Popup */}
    <div className="fixed top-0 left-0 right-0 z-50 bg-white w-full lg:w-2/3 mx-auto my-5 p-4 md:p-10 lg:p-20 rounded-lg ">
     {/* Click close Popup */}
