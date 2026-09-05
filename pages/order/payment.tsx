@@ -6,16 +6,40 @@ import Link from "next/link";
 
 import { FaLock, FaTruck, FaShieldAlt, FaCrown, FaPhone, FaEnvelope, FaMapMarkerAlt, FaCreditCard, FaUniversity, FaCheck } from "react-icons/fa";
 
+/* =========================================================
+   GOOGLE APPS SCRIPT
+========================================================= */
+
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrolAV6BQpfnbmamfkSD2UH4xONxpZt40zeFe3xogngvkF_HwE-g04QV0hGtHX1C3Z/exec";
+
+/* =========================================================
+   TYPES
+========================================================= */
+
 interface OrderItem {
  id: string;
+
  name: string;
+
  title?: string;
+
  slug?: string;
+
+ /*
+  Reference number của Rolex
+ */
+ reference?: string;
+
  quantity: number;
+
  price?: number;
+
  priceNew?: number;
+
  currency?: string;
+
  image?: string;
+
  images?: {
   main?: string;
  };
@@ -23,32 +47,62 @@ interface OrderItem {
 
 interface CustomerInfo {
  fullName?: string;
+
  phone?: string;
+
  email?: string;
+
  address?: string;
+
  province?: string;
+
  district?: string;
+
  zipcode?: string;
 }
 
 interface OrderData {
  orderId: string;
+
  customer: CustomerInfo;
+
  items: OrderItem[];
+
  createdAt?: string;
+
  paymentMethod?: string;
+
+ orderTotal?: number;
+
+ syncedToGoogleSheet?: boolean;
 }
+
+/* =========================================================
+   FACEBOOK PIXEL TYPE
+========================================================= */
+
+declare global {
+ interface Window {
+  fbq?: (...args: any[]) => void;
+ }
+}
+
+/* =========================================================
+   COMPONENT
+========================================================= */
 
 const Payment = () => {
  const router = useRouter();
 
  const [order, setOrder] = useState<OrderData | null>(null);
+
  const [isLoaded, setIsLoaded] = useState(false);
 
  const [paymentMethod, setPaymentMethod] = useState<"cod" | "bank">("cod");
 
- // POPUP PAYMENT NOTICE
  const [showPaymentNotice, setShowPaymentNotice] = useState(false);
+
+ const [isSubmitting, setIsSubmitting] = useState(false);
 
  /* =========================================================
     LOAD ORDER
@@ -71,7 +125,7 @@ const Payment = () => {
  }, []);
 
  /* =========================================================
-    CALCULATE TOTAL
+    CALCULATE SUBTOTAL
  ========================================================= */
 
  const subtotal = useMemo(() => {
@@ -83,6 +137,10 @@ const Payment = () => {
    return total + price * (item.quantity || 1);
   }, 0);
  }, [order]);
+
+ /* =========================================================
+    TOTAL QUANTITY
+ ========================================================= */
 
  const totalQuantity = useMemo(() => {
   if (!order) return 0;
@@ -105,66 +163,163 @@ const Payment = () => {
  };
 
  /* =========================================================
-    PLACE ORDER
+    GET PRODUCT REFERENCE
+
+    Nếu data RolexWatch của bạn dùng field khác,
+    ví dụ modelNumber thì có thể thêm ở đây.
  ========================================================= */
 
- const handlePlaceOrder = () => {
-  if (!order) return;
+ const getReference = (item: OrderItem) => {
+  return item.reference || item.slug || item.id || "";
+ };
 
-  /* =============================================
-     BANK PAYMENT
-  ============================================= */
+ /* =========================================================
+    SAVE ORDER TO GOOGLE SHEET
+ ========================================================= */
 
-  if (paymentMethod === "bank") {
-   setShowPaymentNotice(true);
+ const saveOrderToGoogleSheet = async (completedOrder: OrderData) => {
+  try {
+   /*
+    Tạo 1 dòng cho mỗi sản phẩm
+   */
 
-   return;
+   const rows = completedOrder.items.map((item) => {
+    const unitPrice = item.priceNew || item.price || 0;
+
+    const quantity = item.quantity || 1;
+
+    return {
+     orderNumber: completedOrder.orderId,
+
+     orderTime: completedOrder.createdAt,
+
+     /*
+        CUSTOMER
+       */
+
+     fullName: completedOrder.customer?.fullName || "",
+
+     phone: completedOrder.customer?.phone || "",
+
+     email: completedOrder.customer?.email || "",
+
+     /*
+        ADDRESS
+       */
+
+     address: completedOrder.customer?.address || "",
+
+     province: completedOrder.customer?.province || "",
+
+     district: completedOrder.customer?.district || "",
+
+     zipcode: completedOrder.customer?.zipcode || "",
+
+     /*
+        PRODUCT
+       */
+
+     productName: item.name || "",
+
+     reference: getReference(item),
+
+     quantity: quantity,
+
+     unitPrice: unitPrice,
+
+     productTotal: unitPrice * quantity,
+
+     currency: item.currency || "MYR",
+
+     paymentMethod: completedOrder.paymentMethod || "Cash on Delivery",
+
+     /*
+        TOTAL ORDER
+       */
+
+     orderTotal: completedOrder.orderTotal || subtotal,
+    };
+   });
+
+   /*
+    SEND GOOGLE SHEET
+   */
+
+   await fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+
+    headers: {
+     "Content-Type": "text/plain;charset=utf-8",
+    },
+
+    body: JSON.stringify({
+     orders: rows,
+    }),
+   });
+
+   return true;
+  } catch (error) {
+   console.error("Cannot save to Google Sheet:", error);
+
+   return false;
   }
+ };
 
-  /* =============================================
-     CREATE ORDER NUMBER
-  ============================================= */
+ /* =========================================================
+    FACEBOOK PIXEL PURCHASE EVENT
+ ========================================================= */
 
-  const orderNumber = order.orderId && order.orderId.trim() !== "" ? order.orderId : generateOrderNumber();
+ const trackFacebookPurchase = (completedOrder: OrderData) => {
+  try {
+   if (typeof window === "undefined") {
+    return;
+   }
 
-  /* =============================================
-     CREATE COMPLETED ORDER
-  ============================================= */
+   if (typeof window.fbq !== "function") {
+    console.warn("Facebook Pixel is not available");
 
-  const completedOrder: OrderData = {
-   ...order,
+    return;
+   }
 
-   orderId: orderNumber,
+   /*
+    Facebook Pixel Purchase
+   */
 
-   paymentMethod: "Cash on Delivery",
+   window.fbq("track", "Purchase", {
+    content_ids: completedOrder.items.map((item) => item.id),
 
-   createdAt: order.createdAt || new Date().toISOString(),
-  };
+    contents: completedOrder.items.map((item) => ({
+     id: item.id,
 
-  /* =============================================
-     SAVE LAST ORDER
+     quantity: item.quantity || 1,
 
-     Dùng cho trang:
-     /order/success
-  ============================================= */
+     item_price: item.priceNew || item.price || 0,
+    })),
 
-  localStorage.setItem("rolex_last_order", JSON.stringify(completedOrder));
+    content_type: "product",
 
-  /* =============================================
-     SAVE ALL ORDERS
+    value: completedOrder.orderTotal || subtotal,
 
-     LocalStorage:
-     rolex_orders
+    currency: "MYR",
 
-     Cấu trúc:
+    num_items: completedOrder.items.reduce(
+     (total, item) => total + (item.quantity || 0),
 
-     [
-      order 1,
-      order 2,
-      order 3
-     ]
-  ============================================= */
+     0,
+    ),
+   });
 
+   console.log("Facebook Purchase event tracked");
+  } catch (error) {
+   console.error("Facebook Pixel tracking error:", error);
+  }
+ };
+
+ /* =========================================================
+    SAVE ORDER HISTORY
+ ========================================================= */
+
+ const saveOrderHistory = (completedOrder: OrderData) => {
   try {
    const savedOrders = localStorage.getItem("rolex_orders");
 
@@ -178,11 +333,9 @@ const Payment = () => {
     }
    }
 
-   /* =============================================
-      CHECK DUPLICATE ORDER
-
-      Tránh việc click Place order nhiều lần
-   ============================================= */
+   /*
+    CHECK DUPLICATE
+   */
 
    const existingOrderIndex = orders.findIndex((item) => item.orderId === completedOrder.orderId);
 
@@ -196,25 +349,126 @@ const Payment = () => {
   } catch (error) {
    console.error("Cannot save order history:", error);
   }
+ };
 
-  /* =============================================
-     OPTIONAL:
-     CLEAR CART
+ /* =========================================================
+    PLACE ORDER
+ ========================================================= */
 
-     Sau khi đặt hàng thành công
-  ============================================= */
+ const handlePlaceOrder = async () => {
+  if (!order) return;
+
+  /*
+    PREVENT DOUBLE CLICK
+   */
+
+  if (isSubmitting) {
+   return;
+  }
+
+  /*
+    BANK PAYMENT
+   */
+
+  if (paymentMethod === "bank") {
+   setShowPaymentNotice(true);
+
+   return;
+  }
+
+  /*
+    START SUBMIT
+   */
+
+  setIsSubmitting(true);
+
+  /*
+    ORDER NUMBER
+   */
+
+  const orderNumber = order.orderId && order.orderId.trim() !== "" ? order.orderId : generateOrderNumber();
+
+  /*
+    CREATE COMPLETED ORDER
+   */
+
+  const completedOrder: OrderData = {
+   ...order,
+
+   orderId: orderNumber,
+
+   paymentMethod: "Cash on Delivery",
+
+   createdAt: order.createdAt || new Date().toISOString(),
+
+   orderTotal: subtotal,
+
+   syncedToGoogleSheet: false,
+  };
+
+  /*
+    SAVE LAST ORDER
+   */
+
+  localStorage.setItem("rolex_last_order", JSON.stringify(completedOrder));
+
+  /*
+    SAVE ORDER HISTORY
+   */
+
+  saveOrderHistory(completedOrder);
+
+  /*
+    FACEBOOK PIXEL
+
+    Track trước khi redirect
+   */
+
+  trackFacebookPurchase(completedOrder);
+
+  /*
+    GOOGLE SHEET
+   */
+
+  const googleSuccess = await saveOrderToGoogleSheet(completedOrder);
+
+  /*
+    UPDATE GOOGLE SYNC STATUS
+   */
+
+  const finalOrder = {
+   ...completedOrder,
+
+   syncedToGoogleSheet: googleSuccess,
+  };
+
+  /*
+    UPDATE LAST ORDER
+   */
+
+  localStorage.setItem("rolex_last_order", JSON.stringify(finalOrder));
+
+  /*
+    UPDATE ORDER HISTORY
+   */
+
+  saveOrderHistory(finalOrder);
+
+  /*
+    CLEAR CART
+   */
 
   localStorage.removeItem("rolex_cart");
 
-  /* =============================================
-     UPDATE CART HEADER
-  ============================================= */
+  /*
+    UPDATE CART HEADER
+   */
 
   window.dispatchEvent(new Event("cartUpdated"));
 
-  /* =============================================
-     REDIRECT SUCCESS
-  ============================================= */
+  /*
+    REDIRECT
+   */
 
   router.push("/order/success");
  };
@@ -259,9 +513,7 @@ const Payment = () => {
 
  return (
   <main className="min-h-screen bg-[#f8f8f6] text-[#303234]">
-   {/* =========================================================
-       STEPS
-   ========================================================= */}
+   {/* STEPS */}
 
    <div className="border-b border-[#dededb] bg-white">
     <div className="container">
@@ -279,9 +531,7 @@ const Payment = () => {
     </div>
    </div>
 
-   {/* =========================================================
-       MAIN
-   ========================================================= */}
+   {/* MAIN */}
 
    <section className="container py-10 md:py-14">
     {/* TITLE */}
@@ -299,14 +549,10 @@ const Payment = () => {
     </div>
 
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
-     {/* =====================================================
-         LEFT COLUMN
-     ===================================================== */}
+     {/* LEFT */}
 
      <div className="space-y-8">
-      {/* ===================================================
-          CUSTOMER INFORMATION
-      =================================================== */}
+      {/* CUSTOMER */}
 
       <section className="border border-[#dededb] bg-white">
        <div className="border-b border-[#dededb] px-6 py-5 md:px-8">
@@ -316,15 +562,11 @@ const Payment = () => {
        </div>
 
        <div className="grid gap-7 p-6 md:grid-cols-2 md:p-8">
-        {/* NAME */}
-
         <div>
          <p className="text-xs uppercase tracking-wide text-[#777]">Full name</p>
 
          <p className="mt-2 font-semibold">{customer.fullName || "-"}</p>
         </div>
-
-        {/* PHONE */}
 
         <div className="flex gap-3">
          <FaPhone className="mt-1 text-[#1b553e]" />
@@ -336,8 +578,6 @@ const Payment = () => {
          </div>
         </div>
 
-        {/* EMAIL */}
-
         <div className="flex gap-3">
          <FaEnvelope className="mt-1 text-[#1b553e]" />
 
@@ -347,8 +587,6 @@ const Payment = () => {
           <p className="mt-2 break-all font-semibold">{customer.email || "-"}</p>
          </div>
         </div>
-
-        {/* ADDRESS */}
 
         <div className="flex gap-3">
          <FaMapMarkerAlt className="mt-1 shrink-0 text-[#1b553e]" />
@@ -362,13 +600,9 @@ const Payment = () => {
        </div>
       </section>
 
-      {/* ===================================================
-          ORDER PRODUCTS
-      =================================================== */}
+      {/* PRODUCTS */}
 
       <section className="border border-[#dededb] bg-white">
-       {/* HEADER */}
-
        <div className="flex items-center justify-between border-b border-[#dededb] px-6 py-5 md:px-8">
         <div>
          <h2 className="text-xl font-semibold">Your order</h2>
@@ -380,8 +614,6 @@ const Payment = () => {
         </div>
        </div>
 
-       {/* PRODUCTS */}
-
        <div>
         {order.items.map((item, index) => {
          const itemPrice = item.priceNew || item.price || 0;
@@ -390,19 +622,17 @@ const Payment = () => {
 
          return (
           <div key={`${item.id}-${index}`} className="flex gap-4 border-b border-[#eeeeec] p-5 last:border-b-0 md:gap-7 md:p-7">
-           {/* IMAGE */}
-
            <div className="flex h-[100px] w-[85px] shrink-0 items-center justify-center bg-[#f4f4f4] md:h-[130px] md:w-[110px]">
             {itemImage && <img src={itemImage} alt={item.name} className="h-full w-full object-contain" />}
            </div>
-
-           {/* PRODUCT INFO */}
 
            <div className="flex min-w-0 flex-1 flex-col justify-between">
             <div>
              <h3 className="text-base font-semibold md:text-lg">{item.name}</h3>
 
              {item.title && <p className="mt-2 text-sm leading-relaxed text-[#777]">{item.title}</p>}
+
+             <p className="mt-2 text-xs text-[#777]">Reference: {getReference(item)}</p>
             </div>
 
             <div className="mt-5 flex items-end justify-between gap-4">
@@ -427,9 +657,7 @@ const Payment = () => {
        </div>
       </section>
 
-      {/* ===================================================
-          PAYMENT METHOD
-      =================================================== */}
+      {/* PAYMENT */}
 
       <section className="border border-[#dededb] bg-white">
        <div className="border-b border-[#dededb] px-6 py-5 md:px-8">
@@ -440,7 +668,7 @@ const Payment = () => {
 
        <div className="p-5 md:p-8">
         <div className="space-y-4">
-         {/* CASH ON DELIVERY */}
+         {/* COD */}
 
          <button
           type="button"
@@ -466,7 +694,7 @@ const Payment = () => {
           </div>
          </button>
 
-         {/* BANK PAYMENT */}
+         {/* BANK */}
 
          <button
           type="button"
@@ -496,13 +724,9 @@ const Payment = () => {
       </section>
      </div>
 
-     {/* =====================================================
-         RIGHT COLUMN
-     ===================================================== */}
+     {/* RIGHT */}
 
      <aside className="space-y-5">
-      {/* ORDER SUMMARY */}
-
       <div className="border border-[#dededb] bg-white p-6 md:p-8">
        <h2 className="text-xl font-semibold">Order summary</h2>
 
@@ -526,14 +750,14 @@ const Payment = () => {
         <span className="text-xl font-semibold">MYR {subtotal.toLocaleString()}</span>
        </div>
 
-       {/* ORDER BUTTON */}
-
        <button
         type="button"
+        disabled={isSubmitting}
         onClick={handlePlaceOrder}
-        className="mt-8 flex w-full items-center justify-center gap-3 rounded-full bg-[var(--primary-color)] py-4 text-sm font-semibold text-white transition-opacity hover:opacity-90">
+        className="mt-8 flex w-full items-center justify-center gap-3 rounded-full bg-[var(--primary-color)] py-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60">
         <FaLock />
-        Place order
+
+        {isSubmitting ? "Processing order..." : "Place order"}
        </button>
 
        <p className="mt-4 text-center text-xs leading-relaxed text-[#777]">By placing your order, you confirm that the information provided is correct.</p>
@@ -577,8 +801,6 @@ const Payment = () => {
        </div>
       </div>
 
-      {/* BACK */}
-
       <Link
        href="/order/cart"
        className="flex w-full items-center justify-center rounded-full border border-[#303234] py-4 text-sm font-semibold transition-colors hover:bg-[#303234] hover:text-white">
@@ -588,31 +810,21 @@ const Payment = () => {
     </div>
    </section>
 
-   {/* =========================================================
-       PAYMENT NOTICE MODAL
-   ========================================================= */}
+   {/* PAYMENT NOTICE */}
 
    {showPaymentNotice && (
     <div className="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/50 p-4">
      <div className="w-full max-w-[540px] bg-white p-6 shadow-2xl md:p-10">
-      {/* ICON */}
-
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#edf6f0]">
        <FaCreditCard className="text-2xl text-[#1b553e]" />
       </div>
 
-      {/* TITLE */}
-
       <h2 className="mt-7 text-center text-2xl font-semibold text-[#303234] md:text-3xl">Payment Method Notice</h2>
-
-      {/* MESSAGE */}
 
       <p className="mx-auto mt-6 max-w-[440px] text-center text-sm leading-7 text-[#666] md:text-base">
        For your convenience, we currently offer Cash on Delivery (COD) as our available payment method. You only need to make payment when your order arrives at
        your doorstep.
       </p>
-
-      {/* BUTTON COD */}
 
       <button
        type="button"
@@ -624,8 +836,6 @@ const Payment = () => {
        className="mt-8 w-full rounded-full bg-[#1b553e] py-4 font-semibold text-white transition hover:opacity-90">
        Continue with Cash on Delivery
       </button>
-
-      {/* CLOSE */}
 
       <button
        type="button"
@@ -648,7 +858,9 @@ const Payment = () => {
 
 interface CheckoutStepProps {
  number: string;
+
  title: string;
+
  current?: boolean;
 }
 
