@@ -1,10 +1,13 @@
 import "~/styles/globals.css";
+import { FACEBOOK_PIXEL_ID, pageview } from "~/lib/facebookPixel";
+
 import { SessionProvider } from "next-auth/react";
 import { Provider } from "react-redux";
 
 import { store } from "~/Redux/store";
 import { MyAppProps } from "~/layout/types";
 import { Layouts } from "~/layout/Layouts";
+
 function App({ Component, pageProps }: MyAppProps, { session }: any) {
  const Layout = Layouts[Component.Layout] ?? ((page: any) => page);
  return (
